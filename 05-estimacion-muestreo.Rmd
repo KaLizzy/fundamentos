@@ -1,0 +1,67 @@
+# Estimación y distribución de muestreo
+
+```{r setup, include=FALSE, message=FALSE}
+library(tidyverse)
+source("R/funciones_auxiliares.R")
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning=FALSE)
+comma <- function(x) format(x, digits = 2, big.mark = ",")
+theme_set(theme_minimal())
+```
+
+En esta sección discutiremos el objetivo general de estimación. 
+y cómo entender y manejar la variabilidad que se produce cuando aleatorizamos 
+la selección de las muestras que utilizamos para hacer análisis.
+
+
+# Ejemplo: precios de casas {-}
+
+Supongamos que queremos conocer el valor total de las casas 
+que se vendieron recientemente en una zona 
+particular. Supondremos que tenemos un listado de las casas que se han
+vendido recientemente, pero en ese listado no se encuentra el precio de venta.
+Decidimos entonces tomar una muestra aleatoria de 120 de esas casas. Para esas 
+casas hacemos trabajo de campo para averiguar el precio de venta.
+
+```{r}
+marco_casas <- read_csv("data/casas.csv")
+set.seed(841)
+muestra_casas <- sample_n(marco_casas, 120) %>% 
+  select(id, nombre_zona, area_habitable_sup_m2, precio_miles)
+sprintf("Hay %0.0f casas en total, tomamos muestra de %0.0f", 
+        nrow(marco_casas), nrow(muestra_casas))
+head(muestra_casas)
+```
+Como tomamos una muestra aleatoria, intentamos estimar el valor
+total de las casas que se vendieron expandiendo el total muestral.
+
+```{r}
+n <- nrow(muestra_casas) # tamaño muestra
+N <- nrow(marco_casas) # tamaño población
+estimar_total <- function(muestra_casas, N){
+  total_muestral <- mean(muestra_casas$precio_miles)
+  n <- nrow(muestra_casas)
+  # cada unidad de la muestra representa a N/n
+  f_exp <- N / n
+  estimador_total <- f_exp * total_muestral
+  res <- tibble(total_muestra = total_muestral, 
+         factor_exp = f_exp, 
+         estimador_total = estimador_total)
+  res
+}
+estimar_total(muestra_casas, N) %>% 
+  mutate(across(where(is.numeric), round, 2)) 
+```
+
+Sin embargo, si hubiéramos obtenido otra muestra, hubiéramos obtenido otra
+estimación diferente. Por ejemplo:
+
+```{r}
+estimar_total(sample_n(marco_casas, 120), N) %>% 
+  mutate(across(where(is.numeric), round, 2)) 
+```
+Para algunas muestras, esta estimación puede estar muy cercana al valor poblacional,
+pero para otras puede estar más lejana. Para entender qué tan buena es una estimación
+particular, entonces, tenemos que entender cuánta variabilidad hay de muestra a muestra
+debida a la aleatorización.
+
+
