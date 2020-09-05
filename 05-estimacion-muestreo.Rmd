@@ -212,7 +212,6 @@ ggplot(sim_estimador_2, aes(x = estimacion)) + geom_histogram(breaks = seq(0, 1,
 ```
 
 
-
 ## El error estándar {-}
 
 Una primera medida útil de la dispersión de la distribución de muestreo
@@ -232,17 +231,48 @@ la desviación estándar de una muestra (o de la población). En nuestro ejemplo
 de las uniformes, la desviación estándar de las muestras varía como:
 
 ```{r}
-map_dbl(1:10000, ~ sd(runif(12))) %>% quantile %>% round(2)
+map_dbl(1:10000, ~ sd(runif(15))) %>% quantile %>% round(2)
 ```
 
 Mientras que el error estándar de la media es aproximadamente
 
 ```{r}
-map_dbl(1:10000, ~ mean(runif(12))) %>% sd
+map_dbl(1:10000, ~ mean(runif(15))) %>% sd
 ```
 
 y el error estándar del máximo es aproximadamente
 
 ```{r}
-map_dbl(1:10000, ~ max(runif(12))) %>% sd
+map_dbl(1:10000, ~ max(runif(15))) %>% sd
 ```
+
+Como ejercicio para contrastar estos conceptos, 
+puedes considerar ¿qué pasa con la desviación estándar de una muestra muy grande de uniformes?
+¿Qué pasa con el error estándar de la media de una muestra muy grande de uniformes?
+
+
+### Ejemplo: valor de casas {-}
+
+Consideramos el error estándar del estimador del total del inventario vendido, usando
+una muestra de 250 con el estimador del total que consideramos. Como aproximamos con
+simulación la distribución de muestreo, podemos hacer:
+
+```{r}
+ee_2 <- replicaciones_2 %>% pull(est_total_millones) %>% sd
+ee_2
+```
+que está en millones de pesos y cuantifica la dispersión de la distribución de
+muestreo del estimador del total.
+
+Para tamaño de muestra 100, obtenemos más dispersión:
+
+```{r}
+ee_1 <- replicaciones_2 %>% pull(est_total_millones) %>% sd
+ee_1
+```
+
+Nótese que esto es muy diferente, por ejemplo, a la desviación estándar
+poblacional o de una muestra. Estas dos cantidades miden la variabilidad del
+estimador del total.
+
+## Calculando la distribución de muestreo
