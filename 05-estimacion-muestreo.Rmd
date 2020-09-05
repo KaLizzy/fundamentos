@@ -139,7 +139,7 @@ La **distribución de muestreo** de $T$ es la función de distribución de $T$.
 Lo más importante es entender que:
 
 - Cuando usamos $T$ para estimar un valor poblacional $\theta$, buscamos que
-la distribución de $T$ esté **altamente concentrada** alrededor del verdadero
+la distribución de muestreo de $T$ esté **altamente concentrada** alrededor del verdadero
 valor $\theta$.
 
 Cuando esto es cierto, quiere decir que con alta probabilidad cuando obtengamos
@@ -201,13 +201,13 @@ replicar_muestreo_unif <- function(est = estimador_1, m = 100, n = 15){
   tibble(id_muestra = 1:m, estimacion = valores_est)
 }
 sim_estimador_1 <- replicar_muestreo_unif(mean, 4000, 15)
-ggplot(sim_estimador_1, aes(x = estimacion)) + geom_histogram() +
+ggplot(sim_estimador_1, aes(x = estimacion)) + geom_histogram(bins = 40) +
   xlim(c(0, 1))
 ```
 
 ```{r}
 sim_estimador_2 <- replicar_muestreo_unif(max, 4000, 15)
-ggplot(sim_estimador_2, aes(x = estimacion)) + geom_histogram() +
+ggplot(sim_estimador_2, aes(x = estimacion)) + geom_histogram(breaks = seq(0, 1, 0.02)) +
   xlim(c(0, 1))
 ```
 
